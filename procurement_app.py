@@ -56,7 +56,7 @@ if prompt := st.chat_input("Ask a question about your file..."):
     # Ask Gemini
     try:
         if api_key:
-            model = genai.GenerativeModel('gemini-1.5-flash')
+            model = genai.GenerativeModel('gemini-2.5-flash')
             with st.chat_message("assistant"):
                 message_placeholder = st.empty()
                 message_placeholder.text("Thinking...")
