@@ -87,7 +87,6 @@ if user_question:
                 
                prompt_template = """
                 You are a helpful AI assistant.
-                
                 Instructions:
                 1. Check the provided "Context" (the document) first.
                 2. If the answer is in the Context, answer using ONLY that information.
