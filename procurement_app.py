@@ -85,9 +85,14 @@ if user_question:
                 
                 model = ChatGoogleGenerativeAI(model="gemini-2.5-flash", google_api_key=api_key, temperature=0.3)
                 
-                prompt_template = """
-                Answer the question accurately using ONLY the context provided below.
-                If the answer is not in the context, say "I cannot find the answer in the provided PDF."
+               prompt_template = """
+                You are a helpful AI assistant.
+                
+                Instructions:
+                1. Check the provided "Context" (the document) first.
+                2. If the answer is in the Context, answer using ONLY that information.
+                3. If the answer is NOT in the Context, answer using your own general knowledge.
+                4. IMPORTANT: If you use your own knowledge, please start your answer with: "(General Knowledge): "
                 
                 Context:
                 {context}
