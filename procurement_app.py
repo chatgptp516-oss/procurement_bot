@@ -83,7 +83,7 @@ if user_question:
                 new_db = FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)
                 docs = new_db.similarity_search(user_question)
                 
-                model = ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key=api_key, temperature=0.3)
+                model = ChatGoogleGenerativeAI(model="gemini-2.5-flash", google_api_key=api_key, temperature=0.3)
                 
                 prompt_template = """
                 Answer the question accurately using ONLY the context provided below.
@@ -110,7 +110,7 @@ if user_question:
             else:
                 # --- MODE 2: General Chat (Brain only) ---
                 # No PDF? No problem. Just use the model directly.
-                model = ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key=api_key)
+                model = ChatGoogleGenerativeAI(model="gemini-2.5-flash", google_api_key=api_key)
                 
                 with st.chat_message("assistant"):
                     message_placeholder = st.empty()
