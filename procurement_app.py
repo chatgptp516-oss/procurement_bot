@@ -44,7 +44,7 @@ if process_button:
                 chunks = text_splitter.split_text(text)
 
                 # C. Turn chunks into Math (Embeddings) using your Key
-                embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-004", google_api_key=api_key)
+                embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004", google_api_key=api_key)
                 
                 # D. Save to FAISS (The Vector Database)
                 vector_store = FAISS.from_texts(chunks, embedding=embeddings)
