@@ -10,7 +10,7 @@ from langchain.prompts import PromptTemplate
 
 # --- 1. SETUP PAGE ---
 st.set_page_config(page_title="My AI Knowledge Base", layout="wide")
-st.title("🤖 Chat with my PDF")
+st.title("🤖 Chat with my expert")
 
 # --- 2. SIDEBAR: CREDENTIALS & DATA ---
 with st.sidebar:
