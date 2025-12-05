@@ -86,12 +86,11 @@ if user_question:
                 model = ChatGoogleGenerativeAI(model="gemini-2.5-flash", google_api_key=api_key, temperature=0.3)
                 
                prompt_template = """
-                You are a helpful AI assistant.
-                Instructions:
-                1. Check the provided "Context" (the document) first.
-                2. If the answer is in the Context, answer using ONLY that information.
-                3. If the answer is NOT in the Context, answer using your own general knowledge.
-                4. IMPORTANT: If you use your own knowledge, please start your answer with: "(General Knowledge): "
+                You are a helpful and polite AI assistant.
+                
+                1. If the user asks a specific question about the document, answer it using ONLY the context provided below.
+                2. If the user greets you (e.g., "Hi", "Hello", "How are you?"), answer politely and ask how you can help with the document.
+                3. If the answer to a specific question is NOT in the context, say: "I checked the document, but I couldn't find information about that."
                 
                 Context:
                 {context}
