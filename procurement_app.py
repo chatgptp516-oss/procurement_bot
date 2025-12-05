@@ -55,6 +55,7 @@ if process_button:
                 st.error(f"Error: {e}")
 
 # --- 4. CHAT INTERFACE ---
+# --- 4. CHAT INTERFACE ---
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -64,7 +65,7 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 # Handle User Question
-user_question = st.chat_input("Ask a question about the file...")
+user_question = st.chat_input("Ask a question...")
 
 if user_question:
     # 1. Show User Question
@@ -72,49 +73,61 @@ if user_question:
     with st.chat_message("user"):
         st.markdown(user_question)
 
-    # 2. Generate Answer (Only if Key and Database exist)
-    if api_key and os.path.exists("faiss_index"):
+    # 2. Generate Answer
+    if api_key:  # Check if we have the Key (The "Brain" needs this)
         try:
-            # Load the Vector Database
-            embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004", google_api_key=api_key)
-            new_db = FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)
-            
-            # Find relevant snippets
-            docs = new_db.similarity_search(user_question)
-
-            # Setup Gemini (using the Cheap "Flash" model)
-            model = ChatGoogleGenerativeAI(model="gemini-2.5-flash", google_api_key=api_key, temperature=0.3)
-
-            # The Instructions (System Prompt)
-            prompt_template = """
-            Answer the question accurately using ONLY the context provided below.
-            If the answer is not in the context, say "I cannot find the answer in the provided PDF."
-            
-            Context:
-            {context}
-            
-            Question:
-            {question}
-            
-            Answer:
-            """
-            prompt = PromptTemplate(template=prompt_template, input_variables=["context", "question"])
-            chain = load_qa_chain(model, chain_type="stuff", prompt=prompt)
-
-            # Run the AI
-            with st.chat_message("assistant"):
-                message_placeholder = st.empty()
-                message_placeholder.text("Thinking...")
+            # Check if the Vector Database exists (The "Book")
+            if os.path.exists("faiss_index"):
+                # --- MODE 1: RAG (Book + Brain) ---
+                embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004", google_api_key=api_key)
+                new_db = FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)
+                docs = new_db.similarity_search(user_question)
                 
-                response = chain({"input_documents": docs, "question": user_question}, return_only_outputs=True)
+                model = ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key=api_key, temperature=0.3)
                 
-                message_placeholder.markdown(response["output_text"])
-                st.session_state.messages.append({"role": "assistant", "content": response["output_text"]})
+                prompt_template = """
+                Answer the question accurately using ONLY the context provided below.
+                If the answer is not in the context, say "I cannot find the answer in the provided PDF."
                 
+                Context:
+                {context}
+                
+                Question:
+                {question}
+                
+                Answer:
+                """
+                prompt = PromptTemplate(template=prompt_template, input_variables=["context", "question"])
+                chain = load_qa_chain(model, chain_type="stuff", prompt=prompt)
+                
+                with st.chat_message("assistant"):
+                    message_placeholder = st.empty()
+                    message_placeholder.text("Consulting the document...")
+                    response = chain({"input_documents": docs, "question": user_question}, return_only_outputs=True)
+                    answer = response["output_text"]
+                    message_placeholder.markdown(answer)
+
+            else:
+                # --- MODE 2: General Chat (Brain only) ---
+                # No PDF? No problem. Just use the model directly.
+                model = ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key=api_key)
+                
+                with st.chat_message("assistant"):
+                    message_placeholder = st.empty()
+                    message_placeholder.text("Thinking...")
+                    
+                    # We send the question directly to Gemini
+                    response = model.invoke(user_question)
+                    answer = response.content
+                    
+                    # Optional: Add a tiny note so the user knows this is general knowledge
+                    answer = f"_(General Knowledge)_ {answer}"
+                    message_placeholder.markdown(answer)
+
+            # Save the answer to history
+            st.session_state.messages.append({"role": "assistant", "content": answer})
+
         except Exception as e:
             st.error(f"Error: {e}")
     else:
-        if not api_key:
-            st.warning("⚠️ Please enter your API Key in the sidebar.")
-        else:
-            st.warning("⚠️ Please upload a PDF and click 'Submit' first.")
+        st.warning("⚠️ Please enter your API Key in the sidebar to chat.")
