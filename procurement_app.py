@@ -83,7 +83,7 @@ if user_question:
             docs = new_db.similarity_search(user_question)
 
             # Setup Gemini (using the Cheap "Flash" model)
-            model = ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key=api_key, temperature=0.3)
+            model = ChatGoogleGenerativeAI(model="gemini-2.5-flash", google_api_key=api_key, temperature=0.3)
 
             # The Instructions (System Prompt)
             prompt_template = """
