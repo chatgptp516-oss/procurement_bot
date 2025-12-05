@@ -76,7 +76,7 @@ if user_question:
     if api_key and os.path.exists("faiss_index"):
         try:
             # Load the Vector Database
-            embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=api_key)
+            embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004", google_api_key=api_key)
             new_db = FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)
             
             # Find relevant snippets
