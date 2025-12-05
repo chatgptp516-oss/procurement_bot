@@ -85,7 +85,7 @@ if user_question:
                 
                 model = ChatGoogleGenerativeAI(model="gemini-2.5-flash", google_api_key=api_key, temperature=0.3)
                 
-               prompt_template = """
+                prompt_template = """
                 You are a helpful and polite AI assistant.
                 
                 1. If the user asks a specific question about the document, answer it using ONLY the context provided below.
